@@ -5,18 +5,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class test {
 
 	public static void main(String[] args) {
 		DatabaseUtils dbu = new DatabaseUtils();
 		ArrayList<ArrayList<String>> queryResult = null;
-		List<List<HashMap<Integer, List<String>>>> routes = new ArrayList<List<HashMap<Integer,List<String>>>>();
-		List<HashMap<Integer, List<String>>> route = new ArrayList<HashMap<Integer,List<String>>>();
-		HashMap<Integer, List<String>> routeLinie = new HashMap<Integer,List<String>>();
+		//List<List<HashMap<Integer, List<String>>>> routes = new ArrayList<List<HashMap<Integer,List<String>>>>();
+		List<TreeMap<Integer, List<String>>> routes = new ArrayList<TreeMap<Integer,List<String>>>();
+		TreeMap<Integer, List<String>> route = new TreeMap<Integer,List<String>>();
 		try {
 			queryResult = dbu.getLinies();
-			routes = dbu.getRouts(10, 9);
+			routes = dbu.getRouts(3, 9);
 			
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
