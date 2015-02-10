@@ -7,17 +7,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import by.iharkaratkou.bsnlogic.BusinessLogicUtils;
+
 public class test {
 
 	public static void main(String[] args) {
-		DatabaseUtils dbu = new DatabaseUtils();
+		BusinessLogicUtils blu = new BusinessLogicUtils();
 		ArrayList<ArrayList<String>> queryResult = null;
 		//List<List<HashMap<Integer, List<String>>>> routes = new ArrayList<List<HashMap<Integer,List<String>>>>();
 		List<TreeMap<Integer, List<String>>> routes = new ArrayList<TreeMap<Integer,List<String>>>();
 		TreeMap<Integer, List<String>> route = new TreeMap<Integer,List<String>>();
 		try {
-			queryResult = dbu.getLinies();
-			routes = dbu.getRouts(3, 9);
+			queryResult = blu.getLinies();
+			routes = blu.getRouts(10, 9);
 			
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
