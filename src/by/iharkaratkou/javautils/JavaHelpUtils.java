@@ -5,8 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 public class JavaHelpUtils {
 	/**
@@ -27,9 +29,18 @@ public class JavaHelpUtils {
 	   }
 	 }
 	
-	public static List<TreeMap<Integer, List<String>>> cloneListHm(List<TreeMap<Integer, List<String>>> list) {
-		List<TreeMap<Integer, List<String>>> clone = new ArrayList<TreeMap<Integer, List<String>>>(list.size());
-	    for(TreeMap<Integer, List<String>> item: list) clone.add((TreeMap<Integer, List<String>>) item.clone());
+	public static List<LinkedHashMap<Integer, List<String>>> cloneListHm(List<LinkedHashMap<Integer, List<String>>> list) {
+		List<LinkedHashMap<Integer, List<String>>> clone = new ArrayList<LinkedHashMap<Integer, List<String>>>(list.size());
+	    for(LinkedHashMap<Integer, List<String>> item: list) clone.add((LinkedHashMap<Integer, List<String>>) item.clone());
 		return clone;
+	}
+	
+	public Entry<Integer, List<String>> getHmLastEntry(LinkedHashMap<Integer, List<String>> hm){
+		Entry<Integer, List<String>> lastEntry = null;
+		Iterator i = hm.entrySet().iterator();
+		while(i.hasNext()){
+			lastEntry = (Entry<Integer, List<String>>) i.next();
+		}
+		return lastEntry;
 	}
 }
