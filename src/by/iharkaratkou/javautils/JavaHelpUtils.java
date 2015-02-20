@@ -4,10 +4,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 public class JavaHelpUtils {
@@ -37,6 +40,7 @@ public class JavaHelpUtils {
 	
 	public Entry<Integer, List<String>> getHmLastEntry(LinkedHashMap<Integer, List<String>> hm){
 		Entry<Integer, List<String>> lastEntry = null;
+		//Map.Entry<Integer, List<String>> lastEntry = new AbstractMap.SimpleEntry<Integer, List<String>>(1,Arrays.asList(""));
 		Iterator i = hm.entrySet().iterator();
 		while(i.hasNext()){
 			lastEntry = (Entry<Integer, List<String>>) i.next();

@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +29,40 @@ public class BusinessLogicUtils {
 		return dbu.execSelect(query);
 	}
 	
+	public ArrayList<ArrayList<String>> getLocalityStation() throws ClassNotFoundException, SQLException{
+		DatabaseUtils dbu = new DatabaseUtils();
+		String query = "SELECT * FROM locality_station";
+		return dbu.execSelect(query);
+	}
+	
+	public List<LinkedHashMap<Integer, List<String>>> getRoutsByLocalities(Integer locality_start, Integer locality_end) throws ClassNotFoundException, SQLException{
+		ArrayList<ArrayList<String>> localityStation = getLocalityStation();
+		final Integer LOCALITY_ID = 1;
+		final Integer STATION_ID = 2;
+		ArrayList<String> stationsStart = new ArrayList<String>();
+		ArrayList<String> stationsEnd = new ArrayList<String>();
+		for(ArrayList<String> row : localityStation){
+			if (locality_start.toString().equals(row.get(LOCALITY_ID))){
+				stationsStart.add(row.get(STATION_ID));
+			}
+			if (locality_end.toString().equals(row.get(LOCALITY_ID))){
+				stationsEnd.add(row.get(STATION_ID));
+			}
+		}
+		//System.out.println(stationsStart);
+		//System.out.println(stationsEnd);
+		List<LinkedHashMap<Integer, List<String>>> finalRoutesByLocalities = new ArrayList<LinkedHashMap<Integer, List<String>>>();
+		for(String station_start: stationsStart){
+			for(String station_end: stationsEnd){
+				//System.out.println(station_start + " " + station_end);
+				finalRoutesByLocalities.addAll(getRoutsByStations(Integer.parseInt(station_start),Integer.parseInt(station_end),localityStation));
+			}
+		}
 		
-	public List<LinkedHashMap<Integer, List<String>>> getRouts(Integer station_start, Integer station_end) throws ClassNotFoundException, SQLException{
-		//List<List<HashMap<Integer, List<String>>>> routes = new ArrayList<List<HashMap<Integer,List<String>>>>();
+		return finalRoutesByLocalities;
+	}
+	
+	public List<LinkedHashMap<Integer, List<String>>> getRoutsByStations(Integer station_start, Integer station_end,ArrayList<ArrayList<String>> localityStation) throws ClassNotFoundException, SQLException{
 		List<LinkedHashMap<Integer, List<String>>> routes = new ArrayList<LinkedHashMap<Integer,List<String>>>();
 		LinkedHashMap<Integer, List<String>> route = new LinkedHashMap<Integer,List<String>>();
 		ArrayList<ArrayList<String>> linies = getLinies();
@@ -44,19 +77,103 @@ public class BusinessLogicUtils {
 				tempList_clon = (List<String>) ((ArrayList) tempList_origin).clone();
 				route.put(Integer.parseInt(row.get(LINIES_DESC_ID)), tempList_clon);
 				routes.add((LinkedHashMap<Integer, List<String>>) route.clone());
-				//routes.add(this.cloneListHm(route));
 				tempList_origin.clear();
 				route.clear();
-				//routes.clear();
 			}
-			//System.out.println(row.get(2));
 		}
 		
-		makeIterationLinie(routes,linies);
-		routes = makeIterationChangeLinie(routes,linies);
-		makeIterationLinie(routes,linies);
-		routes = makeIterationChangeLinie(routes,linies);
+		//ArrayList<ArrayList<String>> localityStation = getLocalityStation();
+		
+		List<LinkedHashMap<Integer, List<String>>> finalRoutes = new ArrayList<LinkedHashMap<Integer,List<String>>>();
+		for(int i = 0; i<2; i++){
+			makeIterationLinie(routes,linies);
+			finalRoutes = checkDestination(routes,station_end,finalRoutes);
+			deleteRoutesDuplicates(finalRoutes);
+			routes.removeAll(finalRoutes);
+			routes = makeIterationChangeLinie(routes,linies);
+			deleteRoutesDuplicates(routes);
+			finalRoutes = checkDestination(routes,station_end,finalRoutes);
+			deleteRoutesDuplicates(finalRoutes);
+			routes = makeIterationChangeStationInLocality(routes,localityStation,linies);
+			finalRoutes = checkDestination(routes,station_end,finalRoutes);
+			deleteRoutesDuplicates(finalRoutes);
+			routes.removeAll(finalRoutes);
+		}
+		
+		return finalRoutes;
+	}
+	
+	List<LinkedHashMap<Integer, List<String>>> makeIterationChangeStationInLocality(List<LinkedHashMap<Integer, List<String>>> routes,ArrayList<ArrayList<String>> localityStation, ArrayList<ArrayList<String>> linies){
+		JavaHelpUtils jhu = new JavaHelpUtils();
+		List<LinkedHashMap<Integer, List<String>>> tempRoutes = (List<LinkedHashMap<Integer, List<String>>>) jhu.deepClone(routes);
+		for (LinkedHashMap<Integer, List<String>> hm : routes) {
+			//System.out.println("hm before: " + hm);
+			LinkedHashMap<Integer, List<String>> hmTemp = (LinkedHashMap<Integer, List<String>>) jhu.deepClone(hm);
+			Entry<Integer, List<String>> lastEntry =  jhu.getHmLastEntry(hm);
+			//choose last elements in List
+			Integer listSize = lastEntry.getValue().size();
+			Integer lastKey = lastEntry.getKey();
+			String lastListValue = lastEntry.getValue().get(listSize - 1);
+			ArrayList<String> otherStationsInLocality = getOtherStationsInLocality(localityStation,lastListValue);
+			LinkedHashMap<Integer,String> hmOtherStations = new LinkedHashMap<Integer,String>();
+			if (otherStationsInLocality.size() != 0){
+				for(String otherStation: otherStationsInLocality){
+					hmOtherStations.putAll(getHmOtherStations(linies,otherStation,lastKey));
+				}
+			}
+			//System.out.println("hmOtherStations: " + hmOtherStations);
+			Entry<Integer, List<String>> entryHmOtherStations = null;
+			Iterator i = hmOtherStations.entrySet().iterator();
+			while(i.hasNext()){
+				entryHmOtherStations = (Entry<Integer, List<String>>) i.next();
+				Integer keyHmOtherStations = entryHmOtherStations.getKey();
+				List<String> valueHmOtherStations = new ArrayList<String>();
+				valueHmOtherStations.add(hmOtherStations.get(keyHmOtherStations));
+				
+				if(!hm.containsKey(keyHmOtherStations)){
+					hm.put(keyHmOtherStations, valueHmOtherStations);
+					//System.out.println("hm after: " + hm);
+					tempRoutes.add((LinkedHashMap<Integer, List<String>>) jhu.deepClone(hm));
+					hm.clear();
+					hm = (LinkedHashMap<Integer, List<String>>) jhu.deepClone(hmTemp);
+				}
+			}
+		}	
+		
+		routes = (List<LinkedHashMap<Integer, List<String>>>) jhu.deepClone(tempRoutes);
+		
 		return routes;
+	}
+	
+	HashMap<Integer,String> getHmOtherStations(ArrayList<ArrayList<String>> linies, String otherStation, Integer lastKey){
+		HashMap<Integer,String> hmOtherStations = new HashMap<Integer,String>();
+		final Integer LINIES_DESC_ID = 1;
+		final Integer STATION_ID = 2;
+		for(ArrayList<String> row : linies){
+			if (otherStation.equals(row.get(STATION_ID)) && !lastKey.equals(Integer.parseInt(row.get(LINIES_DESC_ID)))){
+				hmOtherStations.put(Integer.parseInt(row.get(LINIES_DESC_ID)), row.get(STATION_ID));
+			}
+		}
+		return hmOtherStations;
+	}
+	
+	ArrayList<String> getOtherStationsInLocality(ArrayList<ArrayList<String>> localityStation,String lastListValue){
+		ArrayList<String> otherStationsInLocalityLoc = new ArrayList<String>();
+		final Integer LOCALITY_ID = 1;
+		final Integer STATION_ID = 2;
+		String locality_id = null;
+		for(ArrayList<String> row : localityStation){
+			if (lastListValue.equals(row.get(STATION_ID))){
+				locality_id = row.get(LOCALITY_ID);
+			}
+		}
+		for(ArrayList<String> row : localityStation){
+			if (!lastListValue.equals(row.get(STATION_ID)) && locality_id.equals(row.get(LOCALITY_ID))){
+				otherStationsInLocalityLoc.add(row.get(STATION_ID));
+			}
+		}
+		
+		return otherStationsInLocalityLoc;
 	}
 	
 	List<LinkedHashMap<Integer, List<String>>> makeIterationLinie(List<LinkedHashMap<Integer, List<String>>> routes, ArrayList<ArrayList<String>> linies) {
@@ -70,18 +187,13 @@ public class BusinessLogicUtils {
 			Entry<Integer, List<String>> lastEntry =  jhu.getHmLastEntry(hm);
 			//choose last elements in List
 			Integer listSize = lastEntry.getValue().size();
-			System.out.println(lastEntry.getKey());
-			System.out.println(lastEntry.getValue().get(listSize - 1));
 			Integer lastKey = lastEntry.getKey();
 			String lastListValue = lastEntry.getValue().get(listSize - 1);
-			System.out.println("Station Up: " + getStation(linies,lastKey,lastListValue,"Up"));
-			System.out.println("Station Down: " + getStation(linies,lastKey,lastListValue,"Down"));
 			String stationUp = getStation(linies,lastKey,lastListValue,"Up");
 			String stationDown = getStation(linies,lastKey,lastListValue,"Down");
 			LinkedHashMap<Integer, List<String>> hmWithNewLinieStations = null;
 			if(stationUp != ""){
 				hmWithNewLinieStations = addNewLinieStations(hm,stationUp);
-				System.out.println("routes: " + routes);
 			}
 			arrayStationDown[hmCounter] = stationDown;
 			hmCounter++;
@@ -91,12 +203,7 @@ public class BusinessLogicUtils {
 			//3) change linie
 			//4) change station in current local
 		}
-		
-		System.out.println("routes: " + routes);
-		
-		
 		return routes;
-		
 	}
 	
 	String getStation(ArrayList<ArrayList<String>> linies, Integer linie, String station, String direction){
@@ -122,6 +229,7 @@ public class BusinessLogicUtils {
 	}
 	
 	LinkedHashMap<Integer, List<String>> addNewLinieStations(LinkedHashMap<Integer, List<String>> hm, String stationUp){
+		//System.out.println("addNewLinieStations starts");
 		boolean isStationAlreadyExist = false;
 		JavaHelpUtils jhu = new JavaHelpUtils();
 		for(List<String> valueList: hm.values()){
@@ -134,8 +242,11 @@ public class BusinessLogicUtils {
 		
 		if(!isStationAlreadyExist){
 			Entry<Integer, List<String>> lastEntry = jhu.getHmLastEntry(hm);
+			//System.out.println("hm in addNewLinieStations: " + hm + " lastEntry in addNewLinieStations: " + lastEntry + " stationUp in addNewLinieStations: " + stationUp + " lastEntry.getValue(): " + lastEntry.getValue());
 			lastEntry.getValue().add(stationUp);
+			//System.out.println("lastEntry in addNewLinieStations after: " + lastEntry);
 		}
+		//System.out.println("addNewLinieStations ends");
 		return hm;
 	}
 	
@@ -155,13 +266,14 @@ public class BusinessLogicUtils {
 				Integer key = entry.getKey();
 			    List<String> value = entry.getValue();
 				LinkedHashMap<Integer, List<String>> hmTemp = (LinkedHashMap<Integer, List<String>>) jhu.deepClone(hm);
-				hmTemp.put(key, value);
+				if(!hmTemp.containsKey(key)){
+					hmTemp.put(key, value);
+				}
 			    tempRoutes.add(hmTemp);
 			}	
 			
 		}
 		routes = (List<LinkedHashMap<Integer, List<String>>>) jhu.deepClone(tempRoutes);
-		System.out.println("routes: " + routes);
 		return routes;
 	}
 	
@@ -175,6 +287,29 @@ public class BusinessLogicUtils {
 			}
 		}
 		return hmNewLinies;
+	}
+	
+	List<LinkedHashMap<Integer, List<String>>> deleteRoutesDuplicates(List<LinkedHashMap<Integer, List<String>>> routes){
+		
+		HashSet<LinkedHashMap<Integer, List<String>>> hs = new HashSet<LinkedHashMap<Integer, List<String>>>();
+		hs.addAll(routes);
+		routes.clear();
+		routes.addAll(hs);
+		return routes;
+	}
+	
+	List<LinkedHashMap<Integer, List<String>>> checkDestination(List<LinkedHashMap<Integer, List<String>>> routes, Integer station_end, List<LinkedHashMap<Integer, List<String>>> finalRoutes){
+		JavaHelpUtils jhu = new JavaHelpUtils();
+		for(LinkedHashMap<Integer, List<String>> hm: routes){
+			//System.out.println("hm in checkDestination: " + hm);
+			Entry<Integer, List<String>> lastEntry = jhu.getHmLastEntry(hm);
+			Integer listSize = lastEntry.getValue().size();
+			String lastListValue = lastEntry.getValue().get(listSize - 1);
+			if(station_end.equals(Integer.parseInt(lastListValue))){
+				finalRoutes.add(hm);
+			}
+		}
+		return finalRoutes;
 	}
 		
 }
