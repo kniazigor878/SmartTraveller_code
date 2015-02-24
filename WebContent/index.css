@@ -1,0 +1,55 @@
+.flex-container {
+  height:75vh;
+  display:flex;
+  flex-direction: row;
+}
+.flex-item{
+    flex:3;
+}
+.routes-container {
+ 	height:482px;
+ 	overflow-y:auto;
+}
+.routes-item{
+	border-style: solid;
+    border-width: 1px;
+    height: 100px;
+    background-color:white;
+}
+footer {
+	height: 30px;
+	float: bottom;
+	background-color:#2c3e50;
+	color:white;
+	text-align: center;
+}
+header {
+	float: top;
+	height:75px;
+}
+
+#routes_list{
+	flex:5;
+}
+#routes{
+	flex:8;
+} 
+#logo{
+	position: absolute;
+    right: 470px;
+    top: 0px;
+}
+#company_name{
+	float:center;
+}
+#choose_bar{
+	text-align: center;
+}
+canvas{
+	background:url("images/map.png") no-repeat;
+	background-size: 100%;
+}
+body{
+	background:url("images/grey2.jpg") no-repeat;
+	background-size: 100%;
+}
