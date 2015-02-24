@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -17,7 +18,11 @@ function draw() {
 	var routesDiv = document.getElementById("routes");
 	ctx.canvas.width  = routesDiv.clientWidth;
 	ctx.canvas.height = routesDiv.clientHeight;
+	var routesContDiv = document.getElementById("routes-container");
+	routesContDiv.setAttribute("style","height:" + routesDiv.clientHeight + "px;");
 	
+	alert(localities);
+	alert("ff");
 	ctx.beginPath();
 	ctx.fillStyle = "grey";
 	ctx.arc(260,240,10,0,degreesToRadians(360),true);
@@ -31,24 +36,21 @@ window.onload = draw;
 <body>
 	<div>
 		<header>
-		<div id="company_name" style="text-align: center">
-			<h1><b>SmartTraveller</b></h1>
-		</div>
-		<div id="logo">
-			<img src="images/smart_traveller_logo1.png" />
+		<div id="company_name">
+			<h1 style="white-space: nowrap"><b>SmartTraveller</b><img src="images/smart_traveller_logo1.png" /></h1>
 		</div>
 		</header>
 		<div id="choose_bar">
 			<form name="choose_form" action="" method="get">
 				<b>Select start locality:</b> <select id="start_locality">
-					<option value="start_locality_value">Минск</option>
-					<option value="start_locality_value">Витебск</option>
-					<option value="start_locality_value">Гродно</option>
+					<c:forEach var="arrLocalities" items="${localities}">
+        				<option value="${arrLocalities[0]}"><c:out value="${arrLocalities[1]}"/></option>
+      				</c:forEach>
 				</select> 
 				<b>Select end locality:</b> <select id="start_locality">
-					<option value="start_locality_value">Минск</option>
-					<option value="start_locality_value">Витебск</option>
-					<option value="start_locality_value">Гродно</option>
+					<c:forEach var="arrLocalities" items="${localities}">
+        				<option value="${arrLocalities[0]}"><c:out value="${arrLocalities[1]}"/></option>
+      				</c:forEach>
 				</select> 
 				<input type="submit" value="Find" />
 			</form>
@@ -57,7 +59,7 @@ window.onload = draw;
 		<div class="flex-container">
 			<div class="flex-item"></div>
 			<div class="flex-item" id="routes_list">
-				<div class="routes-container">
+				<div class="routes-container" id="routes-container">
 					<div class="routes-item">one</div>
 					<div class="routes-item">two</div>
 					<div class="routes-item">three</div>

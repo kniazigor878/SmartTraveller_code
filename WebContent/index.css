@@ -7,7 +7,6 @@
     flex:3;
 }
 .routes-container {
- 	height:482px;
  	overflow-y:auto;
 }
 .routes-item{
@@ -25,7 +24,7 @@ footer {
 }
 header {
 	float: top;
-	height:75px;
+	height:110px;
 }
 
 #routes_list{
@@ -34,13 +33,15 @@ header {
 #routes{
 	flex:8;
 } 
-#logo{
-	position: absolute;
+/* #logo{
+	position: relative;
     right: 470px;
     top: 0px;
-}
+    float:right;
+} */
 #company_name{
-	float:center;
+	width: 300px;
+    margin: 0 auto;
 }
 #choose_bar{
 	text-align: center;

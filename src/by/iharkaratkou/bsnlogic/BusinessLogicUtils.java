@@ -35,6 +35,12 @@ public class BusinessLogicUtils {
 		return dbu.execSelect(query);
 	}
 	
+	public ArrayList<ArrayList<String>> getLocalities() throws ClassNotFoundException, SQLException{
+		DatabaseUtils dbu = new DatabaseUtils();
+		String query = "SELECT * FROM localities";
+		return dbu.execSelect(query);
+	}
+	
 	public List<LinkedHashMap<Integer, List<String>>> getRoutsByLocalities(Integer locality_start, Integer locality_end) throws ClassNotFoundException, SQLException{
 		ArrayList<ArrayList<String>> localityStation = getLocalityStation();
 		final Integer LOCALITY_ID = 1;
