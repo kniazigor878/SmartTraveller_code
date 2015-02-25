@@ -35,6 +35,7 @@ public class Controller extends HttpServlet {
 		request.setAttribute("localities", localities);
 		RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
 		rd.forward(request, response);
+		//request.getRequestDispatcher("index.jsp").forward(request, response);
 	}
 
 	/**
