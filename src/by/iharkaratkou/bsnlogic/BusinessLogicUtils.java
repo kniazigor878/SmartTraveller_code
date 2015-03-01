@@ -125,7 +125,7 @@ public class BusinessLogicUtils {
 		List<LinkedHashMap<Integer, List<String>>> finalRoutesByLocalities = new ArrayList<LinkedHashMap<Integer, List<String>>>();
 		for(String station_start: stationsStart){
 			for(String station_end: stationsEnd){
-				//System.out.println(station_start + " " + station_end);
+				System.out.println(station_start + " " + station_end);
 				finalRoutesByLocalities.addAll(getRoutsByStations(Integer.parseInt(station_start),Integer.parseInt(station_end),localityStation));
 			}
 		}
@@ -166,13 +166,12 @@ public class BusinessLogicUtils {
 				route.clear();
 			}
 		}
-		
-		//ArrayList<ArrayList<String>> localityStation = getLocalityStation();
-		
+		System.out.println("routes: " + routes);
 		List<LinkedHashMap<Integer, List<String>>> finalRoutes = new ArrayList<LinkedHashMap<Integer,List<String>>>();
 		for(int i = 0; i<2; i++){
 			makeIterationLinie(routes,linies);
 			finalRoutes = checkDestination(routes,station_end,finalRoutes);
+			System.out.println("finalRoutes1: " + finalRoutes);
 			deleteRoutesDuplicates(finalRoutes);
 			routes.removeAll(finalRoutes);
 			routes = makeIterationChangeLinie(routes,linies);
@@ -184,7 +183,7 @@ public class BusinessLogicUtils {
 			deleteRoutesDuplicates(finalRoutes);
 			routes.removeAll(finalRoutes);
 		}
-		
+		System.out.println("finalRoutes: " + finalRoutes);
 		return finalRoutes;
 	}
 	

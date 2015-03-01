@@ -60,13 +60,29 @@
 			<form name="choose_form" action="MainController" method="post">
 				<b>Select start locality:</b> <select name="start_locality">
 					<c:forEach var="arrLocalitiesStrart" items="${localitiesApp}">
-						<option value="${arrLocalitiesStrart[0]}"><c:out
+						<c:choose>
+							<c:when test = "${arrLocalitiesStrart[0] == start_locality }">
+							<option value="${arrLocalitiesStrart[0]}" selected ="selected"><c:out
 								value="${arrLocalitiesStrart[1]}" /></option>
+							</c:when>	
+							<c:otherwise>
+							<option value="${arrLocalitiesStrart[0]}" ><c:out
+								value="${arrLocalitiesStrart[1]}" /></option>
+							</c:otherwise>
+						</c:choose>
 					</c:forEach>
 				</select> <b>Select end locality:</b> <select name="end_locality">
 					<c:forEach var="arrLocalitiesEnd" items="${localitiesApp}">
-						<option value="${arrLocalitiesEnd[0]}"><c:out
+						<c:choose>
+							<c:when test = "${arrLocalitiesEnd[0] == end_locality }">
+							<option value="${arrLocalitiesEnd[0]}" selected ="selected"><c:out
 								value="${arrLocalitiesEnd[1]}" /></option>
+							</c:when>	
+							<c:otherwise>
+							<option value="${arrLocalitiesEnd[0]}" ><c:out
+								value="${arrLocalitiesEnd[1]}" /></option>
+							</c:otherwise>
+						</c:choose>
 					</c:forEach>
 				</select> <input type="submit" value="Find" />
 			</form>

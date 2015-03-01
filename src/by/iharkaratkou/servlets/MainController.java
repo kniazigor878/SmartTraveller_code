@@ -28,11 +28,11 @@ public class MainController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Integer start_locality = Integer.parseInt(request.getParameter("start_locality"));
+		request.setAttribute("start_locality", start_locality.toString());
 		System.out.println(start_locality);
 		Integer end_locality = Integer.parseInt(request.getParameter("end_locality"));
+		request.setAttribute("end_locality", end_locality.toString());
 		System.out.println(end_locality);
-/*		ArrayList<ArrayList<String>> localitiesApp = (ArrayList<ArrayList<String>>) request.getSession().getServletContext().getAttribute("localitiesApp");
-		System.out.println(localitiesApp);*/
 		
 		BusinessLogicUtils blu = new BusinessLogicUtils();
 		ArrayList<ArrayList<String>> localities = new ArrayList<ArrayList<String>>();

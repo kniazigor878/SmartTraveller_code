@@ -17,7 +17,7 @@ public class test {
 		List<LinkedHashMap<Integer, List<String>>> finalRoutes = new ArrayList<LinkedHashMap<Integer,List<String>>>();
 		List<LinkedHashMap<String, List<String>>> finalRoutesForView = new ArrayList<LinkedHashMap<String,List<String>>>();
 		try {
-			finalRoutes = blu.getRoutsByLocalities(10,9);
+			finalRoutes = blu.getRoutsByLocalities(2,3);
 			finalRoutesForView = blu.getRoutesForView(finalRoutes);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
