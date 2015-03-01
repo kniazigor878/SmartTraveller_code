@@ -12,8 +12,13 @@
 .routes-item{
 	border-style: solid;
     border-width: 1px;
-    height: 100px;
+    height: 70px;
     background-color:white;
+}
+#headItem{
+	text-align: center;
+	font-size: 20px;
+	background-color:#B0B0B0;
 }
 footer {
 	height: 30px;

@@ -22,6 +22,71 @@ import by.iharkaratkou.javautils.JavaHelpUtils;
 
 
 public class BusinessLogicUtils {
+	public ArrayList<ArrayList<String>> getStations() throws ClassNotFoundException, SQLException{
+		DatabaseUtils dbu = new DatabaseUtils();
+		String query = "SELECT * FROM stations";
+		return dbu.execSelect(query);
+	}
+	
+	public ArrayList<ArrayList<String>> getLiniesDesc() throws ClassNotFoundException, SQLException{
+		DatabaseUtils dbu = new DatabaseUtils();
+		String query = "SELECT * FROM linies_desc";
+		return dbu.execSelect(query);
+	}
+	public String getLiniesNameById(String linieId){
+		ArrayList<ArrayList<String>> linies_desc = new ArrayList<ArrayList<String>>();
+		final Integer LINIES_DESC_ID = 0;
+		final Integer LINIES_DESC_NAME = 2;
+		String linieName = "";
+		try {
+			linies_desc = getLiniesDesc();
+			for(ArrayList<String> row : linies_desc){
+				if (linieId.equals(row.get(LINIES_DESC_ID))){
+					linieName = row.get(LINIES_DESC_NAME);
+				}
+			}
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}		
+		return linieName;
+	}
+	
+	public String getStationNameById(String stationId){
+		ArrayList<ArrayList<String>> stations = new ArrayList<ArrayList<String>>();
+		final Integer LINIES_STATION_ID = 0;
+		final Integer LINIES_STATION_NAME = 2;
+		String stationName = "";
+		try {
+			stations = getStations();
+			for(ArrayList<String> row : stations){
+				if (stationId.equals(row.get(LINIES_STATION_ID))){
+					stationName = row.get(LINIES_STATION_NAME);
+				}
+			}
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}		
+		return stationName;
+	}
+	
+	public List<LinkedHashMap<String, List<String>>> getRoutesForView (List<LinkedHashMap<Integer, List<String>>> routes){
+		JavaHelpUtils jhu = new JavaHelpUtils();
+		List<LinkedHashMap<String, List<String>>> routesForView = new ArrayList<LinkedHashMap<String, List<String>>>();
+		for (LinkedHashMap<Integer, List<String>> hm : routes){
+			LinkedHashMap<String, List<String>> hmTemp = new LinkedHashMap<String, List<String>>();
+			for(Integer key: hm.keySet()){
+				String keyName = getLiniesNameById(key.toString());
+				List<String> stationNames = new ArrayList<String>();
+				for(String stationId: hm.get(key)){
+					stationNames.add(getStationNameById(stationId));
+				}
+				hmTemp.put((String) jhu.deepClone(keyName), (List<String>) jhu.deepClone(stationNames));
+			}
+			routesForView.add((LinkedHashMap<String, List<String>>) jhu.deepClone(hmTemp));
+		}
+		
+		return routesForView;
+	}
 	
 	public ArrayList<ArrayList<String>> getLinies() throws ClassNotFoundException, SQLException{
 		DatabaseUtils dbu = new DatabaseUtils();
@@ -65,7 +130,21 @@ public class BusinessLogicUtils {
 			}
 		}
 		
-		return finalRoutesByLocalities;
+		JavaHelpUtils jhu = new JavaHelpUtils();
+		List<LinkedHashMap<Integer, List<String>>> finalRoutesByLocalitiesSmall = new ArrayList<LinkedHashMap<Integer, List<String>>>();
+		final int finalRoutesByLocalitiesSmallLimit = 7;
+		outerloop:
+		for(int i = 0; i < 10; i++){
+			for (LinkedHashMap<Integer, List<String>> hm : finalRoutesByLocalities) {
+				if(hm.size() == i){
+					finalRoutesByLocalitiesSmall.add((LinkedHashMap<Integer, List<String>>) jhu.deepClone(hm));
+					if(finalRoutesByLocalitiesSmall.size() == finalRoutesByLocalitiesSmallLimit) break outerloop;
+				}
+			}
+			//if(finalRoutesByLocalitiesSmall.size() == finalRoutesByLocalitiesSmallLimit) break;
+		}
+		
+		return finalRoutesByLocalitiesSmall;
 	}
 	
 	public List<LinkedHashMap<Integer, List<String>>> getRoutsByStations(Integer station_start, Integer station_end,ArrayList<ArrayList<String>> localityStation) throws ClassNotFoundException, SQLException{

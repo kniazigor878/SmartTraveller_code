@@ -11,10 +11,18 @@
   </welcome-file-list>
   <servlet>
     <servlet-name>Controller</servlet-name>
-    <servlet-class>by.iharkaratkou.servlets.Controller</servlet-class>
-   </servlet>
+    <servlet-class>by.iharkaratkou.servlets.FrontController</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>Controller</servlet-name>
-    <url-pattern>/SmartTraveller/Controller</url-pattern>
-   </servlet-mapping>
+    <url-pattern>/SmartTraveller/FrontController</url-pattern>
+  </servlet-mapping>
+    <servlet>
+    <servlet-name>Controller</servlet-name>
+    <servlet-class>by.iharkaratkou.servlets.MainController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Controller</servlet-name>
+    <url-pattern>/SmartTraveller/MainController</url-pattern>
+  </servlet-mapping>
 </web-app>
