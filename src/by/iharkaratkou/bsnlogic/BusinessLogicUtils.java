@@ -166,24 +166,31 @@ public class BusinessLogicUtils {
 				route.clear();
 			}
 		}
-		System.out.println("routes: " + routes);
+		//System.out.println("routes: " + routes);
 		List<LinkedHashMap<Integer, List<String>>> finalRoutes = new ArrayList<LinkedHashMap<Integer,List<String>>>();
 		for(int i = 0; i<2; i++){
+			System.out.println(i);
+			System.out.println("before makeIterationLinie");
 			makeIterationLinie(routes,linies);
 			finalRoutes = checkDestination(routes,station_end,finalRoutes);
-			System.out.println("finalRoutes1: " + finalRoutes);
+			//System.out.println("finalRoutes1: " + finalRoutes);
 			deleteRoutesDuplicates(finalRoutes);
+			deleteRoutesDuplicates(routes);
 			routes.removeAll(finalRoutes);
+			System.out.println("before makeIterationChangeLinie");
 			routes = makeIterationChangeLinie(routes,linies);
+			//System.out.println("routes: " + routes);
 			deleteRoutesDuplicates(routes);
 			finalRoutes = checkDestination(routes,station_end,finalRoutes);
 			deleteRoutesDuplicates(finalRoutes);
+			System.out.println("before makeIterationChangeStationInLocality");
 			routes = makeIterationChangeStationInLocality(routes,localityStation,linies);
+			deleteRoutesDuplicates(routes);
 			finalRoutes = checkDestination(routes,station_end,finalRoutes);
-			deleteRoutesDuplicates(finalRoutes);
+			deleteRoutesDuplicates(finalRoutes);			
 			routes.removeAll(finalRoutes);
 		}
-		System.out.println("finalRoutes: " + finalRoutes);
+		//System.out.println("finalRoutes: " + finalRoutes);
 		return finalRoutes;
 	}
 	
@@ -274,10 +281,16 @@ public class BusinessLogicUtils {
 			Integer lastKey = lastEntry.getKey();
 			String lastListValue = lastEntry.getValue().get(listSize - 1);
 			String stationUp = getStation(linies,lastKey,lastListValue,"Up");
+			//System.out.println("stationUp: " + stationUp);
 			String stationDown = getStation(linies,lastKey,lastListValue,"Down");
+			//System.out.println("stationDown: " + stationDown);
+			
 			LinkedHashMap<Integer, List<String>> hmWithNewLinieStations = null;
 			if(stationUp != ""){
 				hmWithNewLinieStations = addNewLinieStations(hm,stationUp);
+				//System.out.println("hmWithNewLinieStations: " + hmWithNewLinieStations);
+				//System.out.println("hm: " + hm);
+				//System.out.println("routes: " + routes);
 			}
 			arrayStationDown[hmCounter] = stationDown;
 			hmCounter++;
