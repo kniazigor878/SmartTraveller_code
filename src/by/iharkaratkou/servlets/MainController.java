@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import by.iharkaratkou.beans.FinalRoutesForPrint;
 import by.iharkaratkou.beans.FinalRoutesForView;
 import by.iharkaratkou.bsnlogic.BusinessLogicUtils;
 
@@ -36,13 +37,14 @@ public class MainController extends HttpServlet {
 		System.out.println(end_locality);
 		
 		BusinessLogicUtils blu = new BusinessLogicUtils();
-		ArrayList<ArrayList<String>> localities = new ArrayList<ArrayList<String>>();
 		List<LinkedHashMap<Integer, List<String>>> finalRoutes = new ArrayList<LinkedHashMap<Integer,List<String>>>();
 		List<LinkedHashMap<String, List<String>>> finalRoutesForView = new ArrayList<LinkedHashMap<String,List<String>>>();
+		ArrayList<ArrayList<String>> finalRoutesForPrint = new ArrayList<ArrayList<String>>();
 		try {
-			localities = blu.getLocalities();
+			//localities = blu.getLocalities();
 			finalRoutes = blu.getRoutsByLocalities(start_locality,end_locality);
 			finalRoutesForView = blu.getRoutesForView(finalRoutes);
+			finalRoutesForPrint = blu.getRoutesForPrint(finalRoutes);
 			
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
@@ -57,8 +59,12 @@ public class MainController extends HttpServlet {
 		
 		FinalRoutesForView frfv = new FinalRoutesForView();
 		frfv.setFinalRoutesForViewValues(finalRoutesForView);
+		FinalRoutesForPrint frfp = new FinalRoutesForPrint();
+		frfp.setFinalRoutesForPrintValues(finalRoutesForPrint);
+		System.out.println(frfp.getFinalRoutesForPrintValues());
 		//request.setAttribute("localities", localities);
 		request.setAttribute("frfv", frfv);
+		request.setAttribute("frfp", frfp);
 		//this.getServletConfig().getServletContext().setAttribute("frfv", frfv);
 		RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
 		rd.forward(request, response);

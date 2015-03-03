@@ -13,12 +13,24 @@
 		return;
 	}
 	
-	function printRoute(index){
+	function drawRoute(index){
 		alert(index);
 		var c = document.getElementById("map");
 		var ctxRoutes = c.getContext("2d");
-		ctxRoutes.moveTo(0, 0);
-		ctxRoutes.lineTo(150, 250);
+		var route = "";
+		<c:forEach var="item" items="${frfp.getFinalRoutesForPrintValues()}" varStatus="theCount">
+			(index=='${theCount.index}' ? route= '${item}': route = route);
+		</c:forEach>
+		var localities = [];
+		localities = route.slice(1,route.length-1).split(",");
+		alert(localities);
+		for(var i=0; i<localities.length; i++){
+			if(i==0){
+				//ctxRoutes.moveTo(0, 0);
+			}else{
+				//ctxRoutes.lineTo(150, 250);
+			}
+		}
 		ctxRoutes.lineWidth = 5;
 		ctxRoutes.strokeStyle = '#ff0000';
 		ctxRoutes.stroke();
@@ -123,15 +135,14 @@
 						</b>
 					</div>
 					<jsp:useBean id="frfv"
-						class="by.iharkaratkou.beans.FinalRoutesForView"
-						scope="request">
+						class="by.iharkaratkou.beans.FinalRoutesForView" scope="request">
 					</jsp:useBean>
 					<c:forEach var="arrFinalRoutesForView"
 						items="${frfv.getFinalRoutesForViewValues()}" varStatus="theCount">
 						<%-- <a onClick=printRoute()>
 							<div class="routes-item" id="routItem${theCount.index}">${arrFinalRoutesForView}</div>
 						</a> --%>
-						<div class="routes-item" id="routItem${theCount.index}" onClick=printRoute(${theCount.index}) onmouseover=setDivColor(this,'#99C2FF') onmouseout=setDivColor(this,'white')>${arrFinalRoutesForView}</div>
+						<div class="routes-item" id="routItem${theCount.index}" onClick=drawRoute(${theCount.index}) onmouseover=setDivColor(this,'#99C2FF') onmouseout=setDivColor(this,'white')>${arrFinalRoutesForView}</div>
 					</c:forEach>
 				</div>
 			</div>
