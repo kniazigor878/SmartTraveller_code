@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import by.iharkaratkou.beans.FinalRoutesForView;
 import by.iharkaratkou.bsnlogic.BusinessLogicUtils;
 
 /**
@@ -53,9 +54,12 @@ public class MainController extends HttpServlet {
 		for(LinkedHashMap<String, List<String>> routeInFor: finalRoutesForView){
 			System.out.println(routeInFor);
 		}
-		request.setAttribute("localities", localities);
-		request.setAttribute("finalRoutesForView", finalRoutesForView);
-		//this.getServletConfig().getServletContext().setAttribute("localities", "localities");
+		
+		FinalRoutesForView frfv = new FinalRoutesForView();
+		frfv.setFinalRoutesForViewValues(finalRoutesForView);
+		//request.setAttribute("localities", localities);
+		request.setAttribute("frfv", frfv);
+		//this.getServletConfig().getServletContext().setAttribute("frfv", frfv);
 		RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
 		rd.forward(request, response);
 		

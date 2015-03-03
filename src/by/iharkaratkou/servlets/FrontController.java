@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import by.iharkaratkou.beans.Localities;
 import by.iharkaratkou.bsnlogic.BusinessLogicUtils;
 
 /**
@@ -33,8 +34,11 @@ public class FrontController extends HttpServlet {
 			e.printStackTrace();
 		}
 		//System.out.println(localities);
-		request.setAttribute("localities", localities);
-		//this.getServletConfig().getServletContext().setAttribute("localities", "localities");
+		Localities locals = new Localities();
+		locals.setLocValues(localities);
+		
+		//request.setAttribute("localities", localities);
+		this.getServletConfig().getServletContext().setAttribute("locals", locals);
 		RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
 		rd.forward(request, response);
 		//request.getRequestDispatcher("index.jsp").forward(request, response);

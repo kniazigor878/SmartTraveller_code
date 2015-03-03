@@ -68,6 +68,44 @@ public class BusinessLogicUtils {
 		}		
 		return stationName;
 	}
+
+	public String getLocalityByStationId(String stationId){
+		String localityId = "";
+		ArrayList<ArrayList<String>> localityStation = new ArrayList<ArrayList<String>>();
+		try {
+			localityStation = getLocalityStation();
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		final Integer LOCALITY_ID = 1;
+		final Integer STATION_ID = 2;
+		for(ArrayList<String> row : localityStation){
+			if (stationId.equals(row.get(STATION_ID))){
+				localityId = row.get(LOCALITY_ID);
+			}
+		}
+		return localityId;
+	}
+	
+	public ArrayList<ArrayList<String>> getRoutesForPrint (List<LinkedHashMap<Integer, List<String>>> routes){
+		JavaHelpUtils jhu = new JavaHelpUtils();
+		ArrayList<ArrayList<String>> routesForPrint = new ArrayList<ArrayList<String>>();
+		for (LinkedHashMap<Integer, List<String>> hm : routes){
+			LinkedHashMap<String, List<String>> hmTemp = new LinkedHashMap<String, List<String>>();
+			System.out.println(hm.keySet());
+			List<String> routeLocalities = new ArrayList<String>();
+			for(Integer key: hm.keySet()){
+				//String keyName = getLiniesNameById(key.toString());
+				for(String stationId: hm.get(key)){
+					routeLocalities.add(getLocalityByStationId(stationId));
+				}
+				//hmTemp.put((String) jhu.deepClone(keyName), (List<String>) jhu.deepClone(stationNames));
+			}
+			routesForPrint.add( (ArrayList<String>) jhu.deepClone(routeLocalities));
+		}
+		
+		return routesForPrint;
+	}	
 	
 	public List<LinkedHashMap<String, List<String>>> getRoutesForView (List<LinkedHashMap<Integer, List<String>>> routes){
 		JavaHelpUtils jhu = new JavaHelpUtils();

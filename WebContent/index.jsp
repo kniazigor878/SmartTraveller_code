@@ -8,26 +8,46 @@
 <title>Insert title here</title>
 <link rel="stylesheet" href="index.css">
 <script>
+	function setDivColor(divTag,color){
+		divTag.style.background = color;
+		return;
+	}
+	
+	function printRoute(index){
+		alert(index);
+		var c = document.getElementById("map");
+		var ctxRoutes = c.getContext("2d");
+		ctxRoutes.moveTo(0, 0);
+		ctxRoutes.lineTo(150, 250);
+		ctxRoutes.lineWidth = 5;
+		ctxRoutes.strokeStyle = '#ff0000';
+		ctxRoutes.stroke();
+		return;
+	}
+
 	function degreesToRadians(degrees) {
 		return (degrees * Math.PI) / 180;
 	}
-	
-	function drawCities(ctx,canvasWidth,canvasHeight){
+
+	function drawCities(ctx, canvasWidth, canvasHeight) {
 		var maxLocRarious = 10;
-		
- 		<c:forEach var="item" items="${localities}">
-			var locName = '${item[1]}';
-			var locWidth = '${item[2]}';
-			var locHeigth = '${item[3]}';
-			var locRadius = '${item[4]}';
-			console.log(canvasWidth*locWidth + " " + canvasHeight*locHeigth + " " + maxLocRarious/locRadius + " " + locRadius);
-			ctx.beginPath();
-			ctx.fillStyle = "grey";
-			ctx.arc(canvasWidth*locWidth, canvasHeight*locHeigth, maxLocRarious/locRadius, 0, degreesToRadians(360), true);
-			ctx.fill();
-			ctx.font = "italic " + 2/locRadius +"em serif";
-			ctx.fillText(locName, canvasWidth*locWidth + 10, canvasHeight*locHeigth - 7);
- 		</c:forEach>
+
+		<c:forEach var="item" items="${locals.getLocValues()}">
+		var locName = '${item[1]}';
+		var locWidth = '${item[2]}';
+		var locHeigth = '${item[3]}';
+		var locRadius = '${item[4]}';
+		console.log(canvasWidth * locWidth + " " + canvasHeight * locHeigth
+				+ " " + maxLocRarious / locRadius + " " + locRadius);
+		ctx.beginPath();
+		ctx.fillStyle = "grey";
+		ctx.arc(canvasWidth * locWidth, canvasHeight * locHeigth, maxLocRarious
+				/ locRadius, 0, degreesToRadians(360), true);
+		ctx.fill();
+		ctx.font = "italic " + 2 / locRadius + "em serif";
+		ctx.fillText(locName, canvasWidth * locWidth + 10, canvasHeight
+				* locHeigth - 7);
+		</c:forEach>
 		return;
 	}
 
@@ -40,8 +60,9 @@
 		ctx.canvas.width = canvasWidth;
 		ctx.canvas.height = canvasHeight;
 		var routesContDiv = document.getElementById("routes-container");
-		routesContDiv.setAttribute("style", "height:" + routesDiv.clientHeight + "px;");
-		drawCities(ctx,canvasWidth,canvasHeight);
+		routesContDiv.setAttribute("style", "height:" + routesDiv.clientHeight
+				+ "px;");
+		drawCities(ctx, canvasWidth, canvasHeight);
 	}
 	window.onload = draw;
 </script>
@@ -59,28 +80,32 @@
 			<c:set var="localitiesApp" value="${localities}" scope="application" />
 			<form name="choose_form" action="MainController" method="post">
 				<b>Select start locality:</b> <select name="start_locality">
-					<c:forEach var="arrLocalitiesStrart" items="${localitiesApp}">
+					<jsp:useBean id="locals" class="by.iharkaratkou.beans.Localities"
+						scope="application">
+					</jsp:useBean>
+					<c:forEach var="arrLocalitiesStrart"
+						items="${locals.getLocValues()}">
 						<c:choose>
-							<c:when test = "${arrLocalitiesStrart[0] == start_locality }">
-							<option value="${arrLocalitiesStrart[0]}" selected ="selected"><c:out
-								value="${arrLocalitiesStrart[1]}" /></option>
-							</c:when>	
+							<c:when test="${arrLocalitiesStrart[0] == start_locality }">
+								<option value="${arrLocalitiesStrart[0]}" selected="selected"><c:out
+										value="${arrLocalitiesStrart[1]}" /></option>
+							</c:when>
 							<c:otherwise>
-							<option value="${arrLocalitiesStrart[0]}" ><c:out
-								value="${arrLocalitiesStrart[1]}" /></option>
+								<option value="${arrLocalitiesStrart[0]}"><c:out
+										value="${arrLocalitiesStrart[1]}" /></option>
 							</c:otherwise>
 						</c:choose>
 					</c:forEach>
 				</select> <b>Select end locality:</b> <select name="end_locality">
-					<c:forEach var="arrLocalitiesEnd" items="${localitiesApp}">
+					<c:forEach var="arrLocalitiesEnd" items="${locals.getLocValues()}">
 						<c:choose>
-							<c:when test = "${arrLocalitiesEnd[0] == end_locality }">
-							<option value="${arrLocalitiesEnd[0]}" selected ="selected"><c:out
-								value="${arrLocalitiesEnd[1]}" /></option>
-							</c:when>	
+							<c:when test="${arrLocalitiesEnd[0] == end_locality }">
+								<option value="${arrLocalitiesEnd[0]}" selected="selected"><c:out
+										value="${arrLocalitiesEnd[1]}" /></option>
+							</c:when>
 							<c:otherwise>
-							<option value="${arrLocalitiesEnd[0]}" ><c:out
-								value="${arrLocalitiesEnd[1]}" /></option>
+								<option value="${arrLocalitiesEnd[0]}"><c:out
+										value="${arrLocalitiesEnd[1]}" /></option>
 							</c:otherwise>
 						</c:choose>
 					</c:forEach>
@@ -92,9 +117,21 @@
 			<div class="flex-item"></div>
 			<div class="flex-item" id="routes_list">
 				<div class="routes-container" id="routes-container">
-					<div class="routes-item" id="headItem"><b>Proposed routes.<br>To see the graphic of route click necessary tab below:</b></div>
-					<c:forEach var="arrFinalRoutesForView" items="${finalRoutesForView}">
-						<div class="routes-item">${arrFinalRoutesForView}</div>
+					<div class="routes-item" id="headItem">
+						<b>Proposed routes.<br>To see the graphic of route click
+							necessary tab below:
+						</b>
+					</div>
+					<jsp:useBean id="frfv"
+						class="by.iharkaratkou.beans.FinalRoutesForView"
+						scope="request">
+					</jsp:useBean>
+					<c:forEach var="arrFinalRoutesForView"
+						items="${frfv.getFinalRoutesForViewValues()}" varStatus="theCount">
+						<%-- <a onClick=printRoute()>
+							<div class="routes-item" id="routItem${theCount.index}">${arrFinalRoutesForView}</div>
+						</a> --%>
+						<div class="routes-item" id="routItem${theCount.index}" onClick=printRoute(${theCount.index}) onmouseover=setDivColor(this,'#99C2FF') onmouseout=setDivColor(this,'white')>${arrFinalRoutesForView}</div>
 					</c:forEach>
 				</div>
 			</div>

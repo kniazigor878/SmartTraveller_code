@@ -16,9 +16,12 @@ public class test {
 		BusinessLogicUtils blu = new BusinessLogicUtils();
 		List<LinkedHashMap<Integer, List<String>>> finalRoutes = new ArrayList<LinkedHashMap<Integer,List<String>>>();
 		List<LinkedHashMap<String, List<String>>> finalRoutesForView = new ArrayList<LinkedHashMap<String,List<String>>>();
+		ArrayList<ArrayList<String>> routesForPrint = new ArrayList<ArrayList<String>>();
 		try {
-			finalRoutes = blu.getRoutsByLocalities(2,3);
+			finalRoutes = blu.getRoutsByLocalities(9,10);
 			finalRoutesForView = blu.getRoutesForView(finalRoutes);
+			routesForPrint = blu.getRoutesForPrint(finalRoutes);
+			
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
@@ -28,6 +31,7 @@ public class test {
 		}
 		for(LinkedHashMap<String, List<String>> routeInFor: finalRoutesForView){
 			System.out.println(routeInFor);
-		}		
+		}
+		System.out.println(routesForPrint);
 	}
 }
