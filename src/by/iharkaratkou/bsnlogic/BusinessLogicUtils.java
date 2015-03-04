@@ -206,7 +206,7 @@ public class BusinessLogicUtils {
 		}
 		//System.out.println("routes: " + routes);
 		List<LinkedHashMap<Integer, List<String>>> finalRoutes = new ArrayList<LinkedHashMap<Integer,List<String>>>();
-		for(int i = 0; i<2; i++){
+		for(int i = 0; i<3; i++){
 			System.out.println(i);
 			System.out.println("before makeIterationLinie");
 			makeIterationLinie(routes,linies);

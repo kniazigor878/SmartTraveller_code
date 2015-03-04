@@ -8,29 +8,57 @@
 <title>Insert title here</title>
 <link rel="stylesheet" href="index.css">
 <script>
-	function setDivColor(divTag,color){
-		divTag.style.background = color;
+	function setDivColor(divTag,colorSel,colorNoSel){
+		var nodeList = document.querySelectorAll("." + divTag.className);
+		  for (var i = 1, length = nodeList.length; i < length; i++) {
+		     nodeList[i].style.background = colorNoSel;
+		  }
+		divTag.style.background = colorSel;
 		return;
 	}
 	
-	function drawRoute(index){
-		alert(index);
+	function drawRoute(divTag,colorSel,colorNoSel,index){
+		setDivColor(divTag,colorSel,colorNoSel);
 		var c = document.getElementById("map");
 		var ctxRoutes = c.getContext("2d");
+		var canvasWidth = c.width;
+		var canvasHeight = c.height;
+		ctxRoutes.clearRect(0,0,canvasWidth,canvasHeight);
+		draw();
 		var route = "";
 		<c:forEach var="item" items="${frfp.getFinalRoutesForPrintValues()}" varStatus="theCount">
 			(index=='${theCount.index}' ? route= '${item}': route = route);
 		</c:forEach>
 		var localities = [];
-		localities = route.slice(1,route.length-1).split(",");
-		alert(localities);
-		for(var i=0; i<localities.length; i++){
+		localities = route.slice(1,route.length-1).replace(/\s/g, '').split(",");
+		//alert(c.width + " " + c.height);
+		var locWidth = "";
+		var locHeigth = "";
+		for(var j=0; j<localities.length; j++){
+			//console.log("localities[j]: " + localities[j]);
+			<c:forEach var="item" items="${locals.getLocValues()}" varStatus="theCount">
+				//console.log("item: " + '${item}');
+				//console.log("item[0]: " + "*" + '${item[0]}' + "*" + " localities[j]: " + "*" + localities[j] + "*");
+				if('${item[0]}' == localities[j]){
+					locWidth = '${item[2]}';
+					locHeigth = '${item[3]}';
+					//console.log("locWidth: " + locWidth + " locHeigth: " + locHeigth);
+					//alert("locWidth: " + locWidth + " locHeigth: " + locHeigth);
+					if(j==0){
+						ctxRoutes.moveTo(canvasWidth*locWidth, canvasHeight*locHeigth);
+					}else{
+						ctxRoutes.lineTo(canvasWidth*locWidth, canvasHeight*locHeigth);
+					}
+				}
+			</c:forEach>
+		}
+		/* for(var i=0; i<localities.length; i++){
 			if(i==0){
 				//ctxRoutes.moveTo(0, 0);
 			}else{
 				//ctxRoutes.lineTo(150, 250);
 			}
-		}
+		} */
 		ctxRoutes.lineWidth = 5;
 		ctxRoutes.strokeStyle = '#ff0000';
 		ctxRoutes.stroke();
@@ -142,7 +170,7 @@
 						<%-- <a onClick=printRoute()>
 							<div class="routes-item" id="routItem${theCount.index}">${arrFinalRoutesForView}</div>
 						</a> --%>
-						<div class="routes-item" id="routItem${theCount.index}" onClick=drawRoute(${theCount.index}) onmouseover=setDivColor(this,'#99C2FF') onmouseout=setDivColor(this,'white')>${arrFinalRoutesForView}</div>
+						<div class="routes-item" id="routItem${theCount.index}" onClick=drawRoute(this,'#99C2FF','white',${theCount.index})>${arrFinalRoutesForView}</div>
 					</c:forEach>
 				</div>
 			</div>
